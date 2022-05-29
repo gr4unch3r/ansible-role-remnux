@@ -28,22 +28,29 @@
 
 - name: Fetching Remnux installer
   ansible.builtin.get_url:
-    url: https://github.com/REMnux/remnux-cli/releases/download/v1.3.4/remnux-cli-linux
+    url: https://remnux.org/remnux-cli
     dest: /usr/local/bin/remnux
-    checksum: sha256:https://github.com/REMnux/remnux-cli/releases/download/v1.3.4/remnux-cli-linux.sha256.asc
+    checksum: sha256:23c7f4eefa7599ea2c4156f083906ea5fd99df18f306e4bb43eec0430073985a
     mode: '0755'
 
 - name: Runing Remnux installer
-  ansible.builtin.command: remnux install --mode=cloud --user=vagrant
+  ansible.builtin.shell: remnux install --mode=cloud --user=vagrant
 
 - name: Rebooting machine to make changes take effect
   ansible.builtin.reboot:
 
-- name: Updating Remnux VM
-  ansible.builtin.command: remnux update
+- name: Ensuring password is set to 'vagrant'
+  ansible.builtin.shell: echo 'vagrant:vagrant' | chpasswd
 
-- name: Upgrading Remnux VM
-  ansible.builtin.command: remnux upgrade
+- name: Updating and upgrading Remnux VM
+  ansible.builtin.shell: remnux update && remnux upgrade
+
+- name: Disabling systemd-resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+    masked: true
 
 - name: Rebooting machine to make changes take effect
   ansible.builtin.reboot:
