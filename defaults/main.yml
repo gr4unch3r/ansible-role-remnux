@@ -4,5 +4,5 @@ remnux_deps:
   - gnupg
   - git
   - salt-minion
-remnux_installer: https://remnux.org/remnux-cli
-remnux_checksum: 23c7f4eefa7599ea2c4156f083906ea5fd99df18f306e4bb43eec0430073985a
+remnux_installer: https://github.com/REMnux/remnux-cli/releases/download/v1.3.4/remnux-cli-linux
+remnux_checksum: https://github.com/REMnux/remnux-cli/releases/download/v1.3.4/remnux-cli-linux.sha256.asc
