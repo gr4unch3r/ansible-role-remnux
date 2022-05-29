@@ -10,7 +10,7 @@
     filename: saltstack
     state: present
 
-- name: Installing salt-minion, git and gnupg
+- name: Installing dependencies
   ansible.builtin.apt:
     name: "{{ item }}"
     state: latest
@@ -26,19 +26,15 @@
     state: stopped
     enabled: false
 
-- name: Fetching Remnux state files
-  ansible.builtin.git:
-    repo: https://github.com/REMnux/salt-states.git
-    dest: /srv/salt
-
-- name: Setting Remnux username to 'vagrant'
-  ansible.builtin.lineinfile:
-    path: /srv/salt/remnux/config/user.sls
-    search_string: 'set user'
-    line: "{% set user = salt['pillar.get']('remnux_user', 'vagrant') %}"
+- name: Fetching Remnux installer
+  ansible.builtin.get_url:
+    url: https://github.com/REMnux/remnux-cli/releases/download/v1.3.4/remnux-cli-linux
+    dest: /usr/local/bin/remnux
+    checksum: sha256:https://github.com/REMnux/remnux-cli/releases/download/v1.3.4/remnux-cli-linux.sha256.asc
+    mode: '0755'
 
 - name: Runing Remnux installer
-  ansible.builtin.command: salt-call -l debug --local state.sls remnux.cloud
+  ansible.builtin.command: remnux install --mode=cloud --user=vagrant
 
 - name: Rebooting machine to make changes take effect
   ansible.builtin.reboot:
