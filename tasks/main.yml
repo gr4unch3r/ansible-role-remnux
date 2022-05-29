@@ -12,7 +12,7 @@
     state: present
 
 - name: Runing Remnux installer
-  ansible.builtin.command: remnux install
+  ansible.builtin.command: remnux install --mode=cloud
 
 - name: Rebooting machine to make changes take effect
   ansible.builtin.reboot:
