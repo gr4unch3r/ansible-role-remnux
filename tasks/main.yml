@@ -1,15 +1,19 @@
 ---
 - name: Fetching Remnux installer
   ansible.builtin.get_url:
-    url: https://remnux.org/remnux-cli
+    url: https://github.com/REMnux/remnux-cli/releases/download/v1.3.4/remnux-cli-linux
     dest: /usr/local/bin/remnux
-    checksum: sha256:23c7f4eefa7599ea2c4156f083906ea5fd99df18f306e4bb43eec0430073985a
-    mode: a+x
+    checksum: sha256:https://github.com/REMnux/remnux-cli/releases/download/v1.3.4/remnux-cli-linux.sha256.asc
+    mode: '0755'
 
-- name: Ensuring GnuPG is installed
+- name: Ensuring git and gnupg are installed
   ansible.builtin.apt:
-    name: gnupg
-    state: present
+    name: "{{ item }}"
+    state: latest
+    update_cache: true
+  with_items:
+    - git
+    - gnupg
 
 - name: Runing Remnux installer
   ansible.builtin.command: remnux install --mode=cloud
