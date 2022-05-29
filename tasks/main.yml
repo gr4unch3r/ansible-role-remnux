@@ -1,13 +1,13 @@
 ---
 - name: Adding SaltStack apt repo key
   ansible.builtin.apt_key:
-    url: https://repo.saltproject.io/py3/ubuntu/20.04/amd64/latest/salt-archive-keyring.gpg
+    url: "{{ saltstack_repo }}/salt-archive-keyring.gpg"
     state: present
 
 - name: Adding SaltStack apt repo
   ansible.builtin.apt_repository:
-    repo: deb https://repo.saltproject.io/py3/ubuntu/20.04/amd64/latest focal main
-    filename: saltstack
+    repo: deb {{ saltstack_repo }} focal main
+    filename: salt
     state: present
 
 - name: Installing dependencies
@@ -16,9 +16,7 @@
     state: latest
     update_cache: true
   with_items:
-    - salt-minion
-    - git
-    - gnupg
+    - "{{ remnux_deps }}"
 
 - name: Stopping and disabling salt-minion service
   ansible.builtin.systemd:
@@ -28,22 +26,29 @@
 
 - name: Fetching Remnux installer
   ansible.builtin.get_url:
-    url: https://remnux.org/remnux-cli
+    url: "{{ remnux_installer }}"
     dest: /usr/local/bin/remnux
-    checksum: sha256:23c7f4eefa7599ea2c4156f083906ea5fd99df18f306e4bb43eec0430073985a
+    checksum: sha256:{{ remnux_checksum }}
     mode: '0755'
 
 - name: Runing Remnux installer
-  ansible.builtin.shell: remnux install --mode=cloud --user=vagrant
+  ansible.builtin.shell:
+    cmd: remnux install --mode=cloud --user=vagrant
 
 - name: Rebooting machine to make changes take effect
   ansible.builtin.reboot:
 
 - name: Ensuring password is set to 'vagrant'
-  ansible.builtin.shell: echo 'vagrant:vagrant' | chpasswd
+  ansible.builtin.shell:
+    cmd: echo 'vagrant:vagrant' | chpasswd
 
-- name: Updating and upgrading Remnux VM
-  ansible.builtin.shell: remnux update && remnux upgrade
+- name: Updating Remnux VM
+  ansible.builtin.shell:
+    cmd: remnux update
+
+- name: Updating Remnux VM
+  ansible.builtin.shell:
+    cmd: remnux upgrade
 
 - name: Disabling systemd-resolved
   ansible.builtin.systemd:

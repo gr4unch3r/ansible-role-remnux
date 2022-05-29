@@ -3,6 +3,7 @@
 
 Vagrant.configure("2") do |config|
     config.vm.box = "gr4unch3r/ubuntu-focal"
+    config.vm.network :private_network, ip: "192.168.56.102", gateway: "192.168.56.1", dns: "8.8.8.8"
     config.vm.provider :virtualbox do |v|
       v.gui = false
       v.check_guest_additions = false
