@@ -1,0 +1,27 @@
+---
+- name: Fetching Remnux installer
+  ansible.builtin.get_url:
+    url: https://remnux.org/remnux-cli
+    dest: /usr/local/bin/remnux
+    checksum: sha256:23c7f4eefa7599ea2c4156f083906ea5fd99df18f306e4bb43eec0430073985a
+    mode: a+x
+
+- name: Ensuring GnuPG is installed
+  ansible.builtin.apt:
+    name: gnupg
+    state: present
+
+- name: Runing Remnux installer
+  ansible.builtin.command: remnux install
+
+- name: Rebooting machine to make changes take effect
+  ansible.builtin.reboot:
+
+- name: Updating Remnux VM
+  ansible.builtin.command: remnux update
+
+- name: Upgrading Remnux VM
+  ansible.builtin.command: remnux upgrade
+
+- name: Rebooting machine to make changes take effect
+  ansible.builtin.reboot:

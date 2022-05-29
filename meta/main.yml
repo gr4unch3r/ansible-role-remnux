@@ -1,0 +1,12 @@
+galaxy_info:
+  role_name: remnux
+  author: gr4unch3r
+  description: Install Remnux malware analysis toolkit
+  license: MIT
+  min_ansible_version: '2.1'
+  platforms:
+    - name: Ubuntu
+  galaxy_tags:
+    - system
+    - security
+dependencies: []

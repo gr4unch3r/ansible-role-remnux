@@ -1,0 +1,15 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "gr4unch3r/ubuntu-focal"
+    config.vm.provider :virtualbox do |v|
+      v.gui = false
+      v.check_guest_additions = false
+      v.memory = 10035
+      v.cpus = 3
+    end
+    config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbook.yml"
+    end
+  end
