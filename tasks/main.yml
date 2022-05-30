@@ -54,17 +54,11 @@
   ansible.builtin.reboot:
 
 - name: Fixing eth1 static IP
-  community.general.interfaces_file:
-    iface: eth1
-    option: address
-    value: 192.168.56.102
-    state: present
-
-- name: Fixing eth1 static IP
-  community.general.interfaces_file:
-    iface: eth1
-    option: netmask
-    value: 255.255.255.0
+  community.general.nmcli:
+    conn_name: static-ip
+    ifname: eth1
+    type: ethernet
+    ip4: 192.168.56.102/24
     state: present
 
 - name: Restarting networking
