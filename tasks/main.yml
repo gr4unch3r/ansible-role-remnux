@@ -83,7 +83,7 @@
     enabled: false
     masked: true
 
-- name: Restarting inetsim service
+- name: Starting inetsim service
   ansible.builtin.systemd:
     state: started
     daemon_reload: true
