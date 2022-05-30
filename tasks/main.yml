@@ -33,14 +33,14 @@
 
 - name: Runing Remnux installer
   ansible.builtin.shell:
-    cmd: remnux install --mode=cloud --user=vagrant
+    cmd: remnux install --mode=cloud --user={{ remnux_user }}
 
 - name: Rebooting machine to make changes take effect
   ansible.builtin.reboot:
 
-- name: Ensuring password is set to 'vagrant'
+- name: Ensuring password is set
   ansible.builtin.shell:
-    cmd: echo 'vagrant:vagrant' | chpasswd
+    cmd: echo '{{ remnux_user }}:{{ remnux_passwd }}' | chpasswd
 
 - name: Updating Remnux VM
   ansible.builtin.shell:
@@ -50,6 +50,38 @@
   ansible.builtin.shell:
     cmd: remnux upgrade
 
+- name: Rebooting machine to make changes take effect
+  ansible.builtin.reboot:
+
+- name: Fixing eth1 static IP
+  community.general.interfaces_file:
+    iface: eth1
+    option: address
+    value: 192.168.56.102
+    state: present
+
+- name: Fixing eth1 static IP
+  community.general.interfaces_file:
+    iface: eth1
+    option: netmask
+    value: 255.255.255.0
+    state: present
+
+- name: Restarting networking
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    name: networking
+
+- name: Configuring inetsim
+  ansible.builtin.blockinfile:
+    path: /etc/inetsim/inetsim.conf
+    insertafter: EOF
+    block: |
+      service_bind_address    0.0.0.0
+      dns_default_ip          192.168.56.102
+      https_bind_port         4443
+
 - name: Disabling systemd-resolved
   ansible.builtin.systemd:
     name: systemd-resolved
@@ -57,5 +89,8 @@
     enabled: false
     masked: true
 
-- name: Rebooting machine to make changes take effect
-  ansible.builtin.reboot:
+- name: Restarting inetsim service
+  ansible.builtin.systemd:
+    state: started
+    daemon_reload: true
+    name: inetsim
